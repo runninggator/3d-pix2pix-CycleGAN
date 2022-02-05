@@ -16,6 +16,9 @@ def CreateDataset(opt):
     elif opt.dataset_mode == 'nodule':
         from data.nodule_dataset import NoduleDataset
         dataset = NoduleDataset()
+    elif opt.dataset_mode == 'mri2ct':
+        from data.MRI2CT_dataset import MRI2CTDataset
+        dataset = MRI2CTDataset()
     else:
         raise ValueError("Dataset [%s] not recognized." % opt.dataset_mode)
 

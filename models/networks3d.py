@@ -49,7 +49,7 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % which_model_netG)
     if len(gpu_ids) > 0:
-        netG.cuda(device_id=gpu_ids[0])
+        netG.cuda(device=gpu_ids[0])
     netG.apply(weights_init)
     return netG
 
@@ -70,7 +70,7 @@ def define_D(input_nc, ndf, which_model_netD,
         raise NotImplementedError('Discriminator model name [%s] is not recognized' %
                                   which_model_netD)
     if use_gpu:
-        netD.cuda(device_id=gpu_ids[0])
+        netD.cuda(device=gpu_ids[0])
     netD.apply(weights_init)
     return netD
 
@@ -200,8 +200,10 @@ class UnetSkipConnectionBlock(nn.Module):
             use_bias = norm_layer.func == nn.InstanceNorm3d
         else:
             use_bias = norm_layer == nn.InstanceNorm3d
+        
+        kernel_size = 4
 
-        downconv = nn.Conv3d(outer_nc, inner_nc, kernel_size=4,
+        downconv = nn.Conv3d(outer_nc, inner_nc, kernel_size=kernel_size,
                              stride=2, padding=1, bias=use_bias)
         downrelu = nn.LeakyReLU(0.2, True)
         downnorm = norm_layer(inner_nc)
@@ -210,21 +212,21 @@ class UnetSkipConnectionBlock(nn.Module):
 
         if outermost:
             upconv = nn.ConvTranspose3d(inner_nc * 2, outer_nc,
-                                        kernel_size=4, stride=2,
+                                        kernel_size=kernel_size, stride=2,
                                         padding=1)
             down = [downconv]
             up = [uprelu, upconv, nn.Tanh()]
             model = down + [submodule] + up
         elif innermost:
             upconv = nn.ConvTranspose3d(inner_nc, outer_nc,
-                                        kernel_size=4, stride=2,
+                                        kernel_size=kernel_size, stride=2,
                                         padding=1, bias=use_bias)
             down = [downrelu, downconv]
             up = [uprelu, upconv, upnorm]
             model = down + up
         else:
             upconv = nn.ConvTranspose3d(inner_nc * 2, outer_nc,
-                                        kernel_size=4, stride=2,
+                                        kernel_size=kernel_size, stride=2,
                                         padding=1, bias=use_bias)
             down = [downrelu, downconv, downnorm]
             up = [uprelu, upconv, upnorm]
