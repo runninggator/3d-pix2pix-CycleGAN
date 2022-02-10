@@ -20,18 +20,18 @@ class MRI2CTDataset(BaseDataset):
     def __getitem__(self, index):
         sample = self.samples[index]
 
-        # load t1 and ct scans
-        t1_scan = np.load(os.path.join(self.root, 'A/train/', sample))
+        # load t2 and ct scans
+        t2_scan = np.load(os.path.join(self.root, 'A/train/', sample))
         ct_scan = np.load(os.path.join(self.root, 'B/train/', sample))
 
         # convert to torch tensors with dimension [channel, z, x, y]
-        # t1_scan = torch.from_numpy(t1_scan[None, ])
+        # t2_scan = torch.from_numpy(t1_scan[None, ])
         # ct_scan = torch.from_numpy(ct_scan[None, ])
-        t1_scan = torch.as_tensor(t1_scan[None,])
+        t2_scan = torch.as_tensor(t2_scan[None,])
         ct_scan = torch.as_tensor(ct_scan[None,])
         
         return {
-            'A' : t1_scan,
+            'A' : t2_scan,
             'B' : ct_scan,
             'Name': sample
         }
