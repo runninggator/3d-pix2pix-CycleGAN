@@ -13,7 +13,8 @@ class MRI2CTDataset(BaseDataset):
     def initialize(self, opt):
         self.opt = opt
         self.root = opt.dataroot
-        self.samples = os.listdir(os.path.join(opt.dataroot, 'A/train'))
+        self.type = 'train' if opt.isTrain else 'test'
+        self.samples = os.listdir(os.path.join(opt.dataroot, f'A/{self.type}'))
 
         random.shuffle(self.samples)
 
@@ -21,8 +22,8 @@ class MRI2CTDataset(BaseDataset):
         sample = self.samples[index]
 
         # load t2 and ct scans
-        t2_scan = np.load(os.path.join(self.root, 'A/train/', sample))
-        ct_scan = np.load(os.path.join(self.root, 'B/train/', sample))
+        t2_scan = np.load(os.path.join(self.root, f'A/{self.type}/', sample))
+        ct_scan = np.load(os.path.join(self.root, f'B/{self.type}/', sample))
 
         # convert to torch tensors with dimension [channel, z, x, y]
         # t2_scan = torch.from_numpy(t1_scan[None, ])
