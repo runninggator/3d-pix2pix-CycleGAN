@@ -417,13 +417,8 @@ class NifitDataSet(torch.utils.data.Dataset):
         return 'Nifti Dataset'
     
     def initialize(self, opt):
-        self.dataloader = torch.utils.data.DataLoader(
-            self, 
-            batch_size=opt.batchSize, 
-            shuffle=True, 
-            num_workers=opt.workers, 
-            pin_memory=True
-        )
+        # This func is needed for compatability with 3d-pix2pix dataloader
+        pass
 
     def read_image(self, path):
         reader = sitk.ImageFileReader()
