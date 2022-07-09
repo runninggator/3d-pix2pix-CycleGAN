@@ -398,7 +398,6 @@ class NifitDataSet(torch.utils.data.Dataset):
                  test=False):
 
         # Init membership variables
-        self.name = lambda: 'Nifti Dataset'
         self.data_path = data_path
         self.images_list = lstFiles(os.path.join(data_path, 'images'))
         self.labels_list = lstFiles(os.path.join(data_path, 'labels'))
@@ -413,6 +412,18 @@ class NifitDataSet(torch.utils.data.Dataset):
         self.test = test
 
         self.bit = sitk.sitkFloat32
+
+    def name(self):
+        return 'Nifti Dataset'
+    
+    def initialize(self, opt):
+        self.dataloader = torch.utils.data.DataLoader(
+            self.dataset, 
+            batch_size=opt.batch_size, 
+            shuffle=True, 
+            num_workers=opt.workers, 
+            pin_memory=True
+        )
 
     def read_image(self, path):
         reader = sitk.ImageFileReader()
