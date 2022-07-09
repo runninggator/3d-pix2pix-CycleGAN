@@ -418,7 +418,7 @@ class NifitDataSet(torch.utils.data.Dataset):
     
     def initialize(self, opt):
         self.dataloader = torch.utils.data.DataLoader(
-            self.dataset, 
+            self, 
             batch_size=opt.batch_size, 
             shuffle=True, 
             num_workers=opt.workers, 
