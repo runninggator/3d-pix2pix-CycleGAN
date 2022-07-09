@@ -11,7 +11,7 @@ class BaseOptions():
     def initialize(self):
         self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
-        self.parser.add_argument('--loadSize', type=int, default=286, help='scale images to this size')
+        self.parser.add_argument('--loadSize', type=int, default=256, help='scale images to this size')
         self.parser.add_argument('--fineSize', type=int, default=256, help='then crop to this size')
         self.parser.add_argument('--depthSize', type=int, default=256, help='depth for 3d images')
         self.parser.add_argument('--input_nc', type=int, default=3, help='# of input image channels')
@@ -26,6 +26,11 @@ class BaseOptions():
         self.parser.add_argument('--dataset_mode', type=str, default='unaligned', help='chooses how datasets are loaded. [unaligned | aligned | single]')
         self.parser.add_argument('--model', type=str, default='cycle_gan',
                                  help='chooses which model to use. cycle_gan, pix2pix, test')
+        self.parser.add_argument('--min_pixel', default=0.1, help='Percentage of minimum non-zero pixels in the cropped label')
+        self.parser.add_argument('--patch_size', default=[128, 128, 64], help='Size of the patches extracted from the image')
+        self.parser.add_argument('--new_resolution', default=(0.45, 0.45, 0.45), help='New resolution (if you want to resample the data again during training')
+        self.parser.add_argument('--resample', default=False, help='Decide or not to rescale the images to a new resolution')
+        self.parser.add_argument('--drop_ratio', default=0, help='Probability to drop a cropped area if the label is empty. All empty patches will be dropped for 0 and accept all cropped patches if set to 1')
         self.parser.add_argument('--which_direction', type=str, default='AtoB', help='AtoB or BtoA')
         self.parser.add_argument('--nThreads', default=2, type=int, help='# threads for loading data')
         self.parser.add_argument('--checkpoints_dir', type=str, default='./checkpoints', help='models are saved here')

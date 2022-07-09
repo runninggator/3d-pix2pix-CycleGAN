@@ -29,7 +29,7 @@ def CreateDataset(opt):
             NiftiDataset.Padding((opt.patch_size[0], opt.patch_size[1], opt.patch_size[2])),
             NiftiDataset.RandomCrop((opt.patch_size[0], opt.patch_size[1], opt.patch_size[2]), opt.drop_ratio, min_pixel),
         ]
-        dataset = NifitDataSet(opt.data_path, which_direction='AtoB', transforms=trainTransforms, shuffle_labels=True, train=True)
+        dataset = NifitDataSet(opt.dataroot, which_direction='AtoB', transforms=trainTransforms, shuffle_labels=True, train=True)
     else:
         raise ValueError("Dataset [%s] not recognized." % opt.dataset_mode)
 
