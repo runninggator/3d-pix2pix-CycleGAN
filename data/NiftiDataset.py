@@ -398,6 +398,7 @@ class NifitDataSet(torch.utils.data.Dataset):
                  test=False):
 
         # Init membership variables
+        self.name = 'Nifti Dataset'
         self.data_path = data_path
         self.images_list = lstFiles(os.path.join(data_path, 'images'))
         self.labels_list = lstFiles(os.path.join(data_path, 'labels'))
