@@ -1,6 +1,6 @@
 import torch.utils.data
 from data.base_data_loader import BaseDataLoader
-
+from data.NiftiDataset import *
 
 def CreateDataset(opt):
     dataset = None
@@ -19,6 +19,17 @@ def CreateDataset(opt):
     elif opt.dataset_mode == 'mri2ct':
         from data.MRI2CT_dataset import MRI2CTDataset
         dataset = MRI2CTDataset()
+    elif opt.dataset_mode == 'nifti':
+        import data.NiftiDataset as NiftiDataset
+
+        min_pixel = int(opt.min_pixel * ((opt.patch_size[0] * opt.patch_size[1] * opt.patch_size[2]) / 100))
+        trainTransforms = [
+            NiftiDataset.Resample(opt.new_resolution, opt.resample),
+            NiftiDataset.Augmentation(),
+            NiftiDataset.Padding((opt.patch_size[0], opt.patch_size[1], opt.patch_size[2])),
+            NiftiDataset.RandomCrop((opt.patch_size[0], opt.patch_size[1], opt.patch_size[2]), opt.drop_ratio, min_pixel),
+        ]
+        dataset = NifitDataSet(opt.data_path, which_direction='AtoB', transforms=trainTransforms, shuffle_labels=True, train=True)
     else:
         raise ValueError("Dataset [%s] not recognized." % opt.dataset_mode)
 
@@ -34,11 +45,21 @@ class CustomDatasetDataLoader(BaseDataLoader):
     def initialize(self, opt):
         BaseDataLoader.initialize(self, opt)
         self.dataset = CreateDataset(opt)
-        self.dataloader = torch.utils.data.DataLoader(
-            self.dataset,
-            batch_size=opt.batchSize,
-            shuffle=not opt.serial_batches,
-            num_workers=int(opt.nThreads))
+        if opt.dataset_mode == 'nifti':
+            self.dataloader = torch.utils.data.DataLoader(
+                self.dataset, 
+                batch_size=opt.batch_size, 
+                shuffle=True, 
+                num_workers=opt.workers, 
+                pin_memory=True
+            )
+        else:
+            self.dataloader = torch.utils.data.DataLoader(
+                self.dataset,
+                batch_size=opt.batchSize,
+                shuffle=not opt.serial_batches,
+                num_workers=int(opt.nThreads)
+            )
 
     def load_data(self):
         return self.dataloader
