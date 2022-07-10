@@ -429,6 +429,7 @@ class NifitDataSet(torch.utils.data.Dataset):
     def __getitem__(self, index):
 
         data_path = self.images_list[index]
+        image_name = os.path.split(data_path)[1]
 
         if self.shuffle_labels is True:
 
@@ -504,7 +505,11 @@ class NifitDataSet(torch.utils.data.Dataset):
         image_np = image_np[np.newaxis, :, :, :]
         label_np = label_np[np.newaxis, :, :, :]
 
-        return torch.from_numpy(image_np), torch.from_numpy(label_np)  # this is the final output to feed the network
+        return {
+            'A' : torch.from_numpy(image_np),
+            'B' : torch.from_numpy(label_np),
+            'Name': image_name
+        } # this is the final output to feed the network
 
     def __len__(self):
         return len(self.images_list)
