@@ -201,10 +201,11 @@ class UnetSkipConnectionBlock(nn.Module):
         else:
             use_bias = norm_layer == nn.InstanceNorm3d
         
-        kernel_size = 4
+        kw = 4
+        padw = int(np.ceil((kw-1)/2))
 
-        downconv = nn.Conv3d(outer_nc, inner_nc, kernel_size=kernel_size,
-                             stride=2, padding=1, bias=use_bias)
+        downconv = nn.Conv3d(outer_nc, inner_nc, kernel_size=kw,
+                             stride=2, padding=padw, bias=use_bias)
         downrelu = nn.LeakyReLU(0.2, True)
         downnorm = norm_layer(inner_nc)
         uprelu = nn.ReLU(True)
@@ -212,22 +213,22 @@ class UnetSkipConnectionBlock(nn.Module):
 
         if outermost:
             upconv = nn.ConvTranspose3d(inner_nc * 2, outer_nc,
-                                        kernel_size=kernel_size, stride=2,
-                                        padding=1)
+                                        kernel_size=kw, stride=2,
+                                        padding=padw)
             down = [downconv]
             up = [uprelu, upconv, nn.Tanh()]
             model = down + [submodule] + up
         elif innermost:
             upconv = nn.ConvTranspose3d(inner_nc, outer_nc,
-                                        kernel_size=kernel_size, stride=2,
-                                        padding=1, bias=use_bias)
+                                        kernel_size=kw, stride=2,
+                                        padding=padw, bias=use_bias)
             down = [downrelu, downconv]
             up = [uprelu, upconv, upnorm]
             model = down + up
         else:
             upconv = nn.ConvTranspose3d(inner_nc * 2, outer_nc,
-                                        kernel_size=kernel_size, stride=2,
-                                        padding=1, bias=use_bias)
+                                        kernel_size=kw, stride=2,
+                                        padding=padw, bias=use_bias)
             down = [downrelu, downconv, downnorm]
             up = [uprelu, upconv, upnorm]
 
