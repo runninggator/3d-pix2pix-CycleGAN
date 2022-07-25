@@ -167,7 +167,7 @@ def inference(model, image_path, result_path, resample, resolution, patch_size_x
         model.set_input(batch)
         model.test()
         pred = model.get_current_visuals()
-        pred = pred['fake_B']
+        pred = pred['fake_B'][0]
 
         pred = (pred * 127.5) + 127.5
 
