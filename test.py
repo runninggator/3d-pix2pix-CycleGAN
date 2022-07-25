@@ -168,7 +168,7 @@ def inference(model, image_path, result_path, resample, resolution, patch_size_x
         model.test()
         pred = model.get_current_visuals()
         pred = pred['fake_B']
-        pred = pred.squeeze().data.cpu().numpy()
+        pred = pred.squeeze().data..numpy()
 
         pred = (pred * 127.5) + 127.5
 
