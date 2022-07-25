@@ -1,5 +1,6 @@
 import os
 import torch
+from models import networks3D
 
 
 class BaseModel():
@@ -37,6 +38,15 @@ class BaseModel():
 
     def save(self, label):
         pass
+
+    # load and print networks; create schedulers
+    def setup(self, opt, parser=None):
+        if self.isTrain:
+            self.schedulers = [networks3D.get_scheduler(optimizer, opt) for optimizer in self.optimizers]
+
+        if not self.isTrain or opt.continue_train:
+            self.load_networks(opt.which_epoch)
+        self.print_networks(opt.verbose)
 
     # helper saving function that can be used by subclasses
     def save_network(self, network, network_label, epoch_label, gpu_ids):
