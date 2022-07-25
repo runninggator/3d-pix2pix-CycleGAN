@@ -222,14 +222,8 @@ def inference(model, image_path, result_path, resample, resolution, patch_size_x
 if __name__ == '__main__':
 
     opt = TestOptions().parse()
-    opt.nThreads = 1   # test code only supports nThreads = 1
-    opt.batchSize = 1  # test code only supports batchSize = 1
-    opt.serial_batches = True  # no shuffle
-    opt.no_flip = True  # no flip
-
-    data_loader = CreateDataLoader(opt)
-    dataset = data_loader.load_data()
     model = create_model(opt)
+    model.setup(opt)
 
     inference(model, opt.image, opt.result, opt.resample, opt.new_resolution, opt.patch_size[0],
               opt.patch_size[1], opt.patch_size[2], opt.stride_inplane, opt.stride_layer, 1)
