@@ -60,8 +60,8 @@ class Pix2Pix3dModel(BaseModel):
             input_A = input['A' if AtoB else 'B']
             input_B = input['B' if AtoB else 'A']
         else:
-            input_A = input[0 if AtoB else 1]
-            input_B = input[1 if AtoB else 0]
+            input_A = input
+            input_B = input
         
         self.input_A.resize_(input_A.size()).copy_(input_A)
         self.input_B.resize_(input_B.size()).copy_(input_B)
