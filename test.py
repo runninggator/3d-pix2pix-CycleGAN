@@ -228,6 +228,7 @@ if __name__ == '__main__':
     opt.no_flip = True  # no flip
 
     model = create_model(opt)
+    model.initialize(opt)
 
     inference(model, opt.image, opt.result, opt.resample, opt.new_resolution, opt.patch_size[0],
               opt.patch_size[1], opt.patch_size[2], opt.stride_inplane, opt.stride_layer, 1)
