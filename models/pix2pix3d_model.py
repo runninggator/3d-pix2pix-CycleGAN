@@ -59,24 +59,34 @@ class Pix2Pix3dModel(BaseModel):
         if self.isTrain:
             input_A = input['A' if AtoB else 'B']
             input_B = input['B' if AtoB else 'A']
+
+            self.input_A.resize_(input_A.size()).copy_(input_A)
+            self.input_B.resize_(input_B.size()).copy_(input_B)
         else:
             input_A = input
-            input_B = input
+
+            self.input_A.resize_(input_A.size()).copy_(input_A)
         
-        self.input_A.resize_(input_A.size()).copy_(input_A)
-        self.input_B.resize_(input_B.size()).copy_(input_B)
         #self.image_paths = input['A_paths' if AtoB else 'B_paths']
 
     def forward(self):
-        self.real_A = Variable(self.input_A)
-        self.fake_B = self.netG.forward(self.real_A)
-        self.real_B = Variable(self.input_B)
+        if self.isTrain:
+            self.real_A = Variable(self.input_A)
+            self.fake_B = self.netG.forward(self.real_A)
+            self.real_B = Variable(self.input_B)
+        else:
+            self.real_A = Variable(self.input_A)
+            self.fake_B = self.netG.forward(self.real_A)
 
     # no backprop gradients
     def test(self):
-        self.real_A = Variable(self.input_A, volatile=True)
-        self.fake_B = self.netG.forward(self.real_A)
-        self.real_B = Variable(self.input_B, volatile=True)
+        if self.isTrain:
+            self.real_A = Variable(self.input_A, volatile=True)
+            self.fake_B = self.netG.forward(self.real_A)
+            self.real_B = Variable(self.input_B, volatile=True)
+        else:
+            self.real_A = Variable(self.input_A, volatile=True)
+            self.fake_B = self.netG.forward(self.real_A)
 
     # get image paths
     def get_image_paths(self):
@@ -134,8 +144,12 @@ class Pix2Pix3dModel(BaseModel):
     def get_current_visuals(self):
         real_A = util.tensor2im3d(self.real_A.data)
         fake_B = util.tensor2im3d(self.fake_B.data)
-        real_B = util.tensor2im3d(self.real_B.data)
-        return OrderedDict([('real_A', real_A), ('fake_B', fake_B), ('real_B', real_B)])
+
+        if self.isTrain:
+            real_B = util.tensor2im3d(self.real_B.data)
+            return OrderedDict([('real_A', real_A), ('fake_B', fake_B), ('real_B', real_B)])
+        else:
+            return OrderedDict([('real_A', real_A), ('fake_B', fake_B)])
 
     def save(self, label):
         self.save_network(self.netG, 'G', label, self.gpu_ids)

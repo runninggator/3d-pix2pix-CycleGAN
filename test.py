@@ -12,6 +12,7 @@ import datetime
 import math
 from tqdm import tqdm
 from torch.autograd import Variable
+from models import pix2pix3d_model
 
 def from_numpy_to_itk(image_np, image_itk):
     image_np = np.transpose(image_np, (2, 1, 0))
@@ -226,7 +227,7 @@ if __name__ == '__main__':
     opt.serial_batches = True  # no shuffle
     opt.no_flip = True  # no flip
 
-    model = create_model(opt)
+    model = pix2pix3d_model.Pix2Pix3dModel()
     model.initialize(opt)
 
     inference(model, opt.image, opt.result, opt.resample, opt.new_resolution, opt.patch_size[0],
